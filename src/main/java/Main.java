@@ -1,5 +1,9 @@
 import core.Line;
 import core.Station;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -14,6 +18,10 @@ public class Main
 {
     private static String dataFile = "src/main/resources/map.json";
     private static Scanner scanner;
+    private static final Logger LOGGER = LogManager.getLogger(Main.class);
+    private static final Marker INPUT_HISTORY_MARKER = MarkerManager.getMarker("INPUT_HISTORY");
+    private static final Marker INVALID_STATIONS_MARKER = MarkerManager.getMarker("INVALID_STATIONS");
+    private static final Marker EXCEPTION_MARKER = MarkerManager.getMarker("EXCEPTION");
 
     private static StationIndex stationIndex;
 
@@ -25,15 +33,22 @@ public class Main
         scanner = new Scanner(System.in);
         for(;;)
         {
-            Station from = takeStation("Введите станцию отправления:");
-            Station to = takeStation("Введите станцию назначения:");
+            try
+            {
+                Station from = takeStation("Введите станцию отправления:");
+                Station to = takeStation("Введите станцию назначения:");
 
-            List<Station> route = calculator.getShortestRoute(from, to);
-            System.out.println("Маршрут:");
-            printRoute(route);
+                List<Station> route = calculator.getShortestRoute(from, to);
+                System.out.println("Маршрут:");
+                printRoute(route);
 
-            System.out.println("Длительность: " +
-                RouteCalculator.calculateDuration(route) + " минут");
+                System.out.println("Длительность: " +
+                        RouteCalculator.calculateDuration(route) + " минут");
+            }
+            catch (Exception ex)
+            {
+                LOGGER.error(ex);
+            }
         }
     }
 
@@ -69,10 +84,17 @@ public class Main
         {
             System.out.println(message);
             String line = scanner.nextLine().trim();
+            //Раскомментировать для проверки логов Error
+            if (line.equals("error"))
+            {
+                line.charAt(10);
+            }
             Station station = stationIndex.getStation(line);
             if(station != null) {
+                LOGGER.info(INPUT_HISTORY_MARKER, "Запрошенная станция: " + station.getName());
                 return station;
             }
+            LOGGER.warn(INVALID_STATIONS_MARKER, "Станция отсутствует в списке: " + line);
             System.out.println("Станция не найдена :(");
         }
     }

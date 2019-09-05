@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 
 public class RouteCalculatorTest extends TestCase
 {
-    RouteCalculator routeCalculator;
-    StationIndex stationIndex;
+    private RouteCalculator routeCalculator;
+    private StationIndex stationIndex;
     private List<Station> getShortestRoute(String from, String to)
     {
         return routeCalculator.getShortestRoute(stationIndex.getStation(from),
@@ -46,22 +46,16 @@ public class RouteCalculatorTest extends TestCase
             {
                 stationIndex.addStation(new Station("Station № " + i, stationIndex.getLine(1)));
                 stationIndex.getLine(1).addStation(stationIndex.getStation("Station № " + i));
-//                line1.addStation(new Station("Station № A" + i, line1));
-//                route1.add(new Station("Station № A" + i, line1));
             }
             else if( i < 20)
             {
                 stationIndex.addStation(new Station("Station № " + i, stationIndex.getLine(2)));
                 stationIndex.getLine(2).addStation(stationIndex.getStation("Station № " + i));
-//                if (i == 3) route2.addAll(route1);
-//                route2.add(new Station("Station № B" + i, line2));
             }
             else
             {
                 stationIndex.addStation(new Station("Station № " + i, stationIndex.getLine(3)));
                 stationIndex.getLine(3).addStation(stationIndex.getStation("Station № " + i));
-//                if (i == 6) route3.addAll(route2);
-//                route3.add(new Station("Station № C" + i, line3));
             }
         }
         list.add(stationIndex.getStation("Station № 9"));
